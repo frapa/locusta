@@ -1,0 +1,88 @@
+html, body, body > .box, aside, main {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: 'Droid Sans', sans;
+    background: #f8f3ea;
+}
+
+#header {
+    padding: 0.75em;
+    background: #5584b1;
+}
+
+#sidebar {
+    width: 15em;
+    margin: 1em;
+    z-index: 10;
+}
+
+#typing-bar {
+    padding: 1em; 
+}
+
+#login-hor,
+#login-ver {
+    align-items: center;
+}
+
+#login-ver .button,
+#login-ver input {
+    width: 20em;
+}
+
+#login-ver .button {
+    margin-top: 1.5em;
+}
+
+#contacts {
+    width: 30em;
+    height: 10em;
+}
+
+.conversation-button {
+    padding: 1em;
+    border: 0;
+    background: transparent;
+    color: black;
+    text-align: left;
+}
+
+.conversation-button:hover {
+    background: #ddd9cf;
+    animation-name: none;
+}
+
+.message-list {
+    flex-basis: 2em;
+    overflow-y: auto;
+}
+
+.message {
+    margin: 1em 1em 0 1em;
+    padding: 0.5em;
+    background: #d3dc82;
+    max-width: 60%;
+    align-self: flex-start;
+}
+
+.own-message {
+    align-self: flex-end;
+    background: #cbe2ef;
+}
+
+.message-content {
+    
+}
+
+.message-time {
+    margin-top: 0.5em;
+    font-size: 60%;
+    align-self: flex-end;
+    color: #555;
+}
+
+/* http://colorpalettes.net/color-palette-2903/ */
+/* http://colorpalettes.net/color-palette-2820/ */
