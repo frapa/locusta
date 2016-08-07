@@ -326,7 +326,7 @@ app.post('/get-messages/', function (req, res) {
 });
 
 app.all('/futon/', function (req, res) {
-    proxy.proxyRequest(req, res, {
+    httpProxy.proxyRequest(req, res, {
         host: 'http://127.0.0.1',
         port: 8984
     });
