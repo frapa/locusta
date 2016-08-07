@@ -12,6 +12,7 @@ body {
     padding: 0.5em;
     background: #5584b1;
     box-shadow: 0 2px 2px #254e7b;
+    z-index: 100;
 }
 
 #sidebar {
@@ -67,14 +68,14 @@ body {
     animation-name: none;
 }
 
-.message-list {
+.message-list-container {
     flex-basis: 2em;
     overflow-y: auto;
     align-content: flex-start;
 }
 
 div.message {
-    margin: 1em 1em 0 1em;
+    margin: 0.5em 1em 0.5em 1em;
     padding: 0.5em;
     background: #d3dc82;
     max-width: 60%;

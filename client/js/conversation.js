@@ -83,6 +83,13 @@ var Conversation = Class.extend({
         this.messages[key].push(msg);
     },
 
+    scrollDown: function (messageList) {
+        setTimeout(function () {
+            var p = messageList.dom.parentNode;
+            p.scrollTop = p.scrollHeight;
+        }, 10);
+    },
+
     onMessage: function (msgObj, addFromUser) {
         if (addFromUser === undefined) {
             addFromUser = true;
@@ -99,7 +106,9 @@ var Conversation = Class.extend({
         msgDate.setTime(msg.timestamp);
         this.pushMessage(msg, msgDate.getFullYear(), msgDate.getMonth()+1, msgDate.getDate());
 
-        this.ui.add(msg.generateUi());
+        var messageList = getUi(this._id);
+        messageList.add(msg.generateUi());
+        this.scrollDown(messageList);
     },
 
     sendMessage: function (data, type)
@@ -112,7 +121,10 @@ var Conversation = Class.extend({
         
         this.pushMessage(msg);
         msg.send();
-        this.ui.add(msg.generateUi());
+
+        var messageList = getUi(this._id);
+        messageList.add(msg.generateUi());
+        this.scrollDown(messageList);
 
         return msg;
     },
@@ -166,7 +178,8 @@ var Conversation = Class.extend({
     },
 
     generateUi: function () {
-        this.ui = new Box('ver', this._id, 'message-list');
+        this.ui = new Box('ver', undefined, 'message-list-container');
+        this.ui.add(new Box('ver', this._id, 'message-list'));
 
         // fill with today's messages
         this.loadMessages();
