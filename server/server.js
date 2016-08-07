@@ -3,8 +3,6 @@ var _ = require('underscore');
 
 // Express Js
 var bodyParser = require('body-parser');
-var http = require('http');
-var httpProxy = require('http-proxy');
 var express = require('express');
 var app = express();
 var appOptions = {root: __dirname + '/../client/'};
@@ -192,7 +190,7 @@ app.post('/start-conversation/', function (req, res) {
                 // update users
                 _.each(userObjs, function (u, uId) {
                     u.conversations[conv._id] = { _id: conv._id };
-                    locusta.sInsertNow(res, u, uId);
+                    locusta.sInsertNow(res, u, uId, function () {});
                 });
 
                 reportSuccess(res, {conversation: conv});
@@ -326,12 +324,6 @@ app.post('/get-messages/', function (req, res) {
     });
 });
 
-var proxy = new httpProxy.createProxyServer();
-app.all('/futon/', function (req, res) {
-    proxy.web(req, res, {
-        target: 'http://127.0.0.1:5984/_utils/'
-    });
-});
 
 // Start server
 app.listen(3427);
