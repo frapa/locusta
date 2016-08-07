@@ -330,7 +330,7 @@ app.all('/futon/', function (req, res) {
         host: 'http://127.0.0.1',
         port: 8984
     });
-}
+});
 
 // Start server
 app.listen(3427);
