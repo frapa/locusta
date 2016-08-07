@@ -152,8 +152,8 @@ var Label = Ui.extend({
     init: function (text, id)
     {
         this.text = text;
-        this.dom = this.newElement('label', '', text);
-        this.dom.for = id;
+        this.dom = this.newElement('label', '', '<span>' + text + '</span>');
+        this.dom.setAttribute('for', id);
     }
 });
 
@@ -181,6 +181,7 @@ var Button = Ui.extend({
 var Checkbox = Box.extend({
     checked: false,
     className: 'checkbox',
+    grow: 0,
 
     init: function (text, callback, id, klass)
     {
@@ -189,19 +190,27 @@ var Checkbox = Box.extend({
             klasses.push(klass);
         }
 
-        this.sup('ver', undefined, klasses.join(' '));
+        this.sup('hor', undefined, klasses.join(' '));
+
+        this.checkbox = this.newElement('input');
+        this.checkbox.type = 'checkbox';
+        this.checkbox.id = id;
+        this.dom.insertBefore(this.checkbox, null);
+
+        $(this.checkbox).on('change', callback)
 
         this.label = new Label(text, id);
         this.add(this.label);
 
-        this.dom.insertBefore(this.newElement('div', 'knob'), null);
-        this.checkbox = this.newElement('input');
-        this.checkbox.type = 'checkbox';
-        this.dom.insertBefore(this.checkbox, null);
+        var slider = this.newElement('div', 'slider');
+        slider.insertBefore(this.newElement('span', 'knob'), null)
+        this.label.dom.insertBefore(slider, null);
+
+        UiElements[id] = this;
     },
 
     toggle: function () {
-        
+        this.checkbox.click();
     }
 });
 

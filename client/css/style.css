@@ -78,7 +78,7 @@ div.message {
     display: block;
     margin: 0.5em 1em 0.5em 1em;
     padding: 0.5em;
-    background: #daecbd;
+    background: #faea95/*#daecbd*/;
     max-width: 60%;
     align-self: flex-start;
     border-radius: 0.25em;
@@ -111,4 +111,5 @@ div.own-message {
 }
 
 /* http://colorpalettes.net/color-palette-2903/ */
-/* http://colorpalettes.net/color-palette-2820/ */
+/* http://colorpalettes.net/color-palette-2800/ */
+/* http://colorpalettes.net/color-palette-1945/ */

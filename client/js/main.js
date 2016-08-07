@@ -42,6 +42,7 @@ $(function () {
 
 // Start app after login
 function init () {
+    // Setup send on enter
     $('#message-text').on('keyup', function sendOnEnter(event) {
         if (event.which == 13) {
             if (event.shiftKey === false) {
@@ -50,12 +51,15 @@ function init () {
             }
         }
     });
-
+    
+    // load conversations
     loadConversations(function () {
         locusta.timer = window.setInterval(loop, locusta.waitTimeFocus);
         locusta.initialized = true;
         Notification.requestPermission();
     });
+
+    getUi('notification-enabled').toggle();
 }
 
 // Detect focus and blur of window

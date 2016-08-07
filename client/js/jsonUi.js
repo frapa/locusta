@@ -22,7 +22,7 @@ var jsonUi = {
         },
         {
           type: 'Checkbox',
-          args: ['notification', function () { }, 'notification-enabled']
+          args: ['Notifications', function (event) { locusta.notificationEnabled = event.target.checked; }, 'notification-enabled']
         },
       ]
     },
