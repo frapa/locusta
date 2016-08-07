@@ -136,8 +136,8 @@ var MessageView = Box.extend({
 
         this.sup('ver', undefined, klasses.join(' '));
 
-        var pre = '<pre class="message">' + message + '</pre>'
-        var messageContent = new Box('hor', undefined, 'message-content', pre);
+        var html = message.replace('\n', '<br />');
+        var messageContent = new Box('hor', undefined, 'message-content', html);
         var formattedDate = strftime('%H:%M - %e %b %Y', new Date(timestamp));
         var time = new Box('hor', undefined, 'message-time', formattedDate);
 
