@@ -3,6 +3,7 @@ var _ = require('underscore');
 
 // Express Js
 var bodyParser = require('body-parser');
+var httpProxy = require('http-proxy');
 var express = require('express');
 var app = express();
 var appOptions = {root: __dirname + '/../client/'};
@@ -323,6 +324,13 @@ app.post('/get-messages/', function (req, res) {
         }
     });
 });
+
+app.all('/futon/', function (req, res) {
+    proxy.proxyRequest(req, res, {
+        host: 'http://127.0.0.1',
+        port: 8984
+    });
+}
 
 // Start server
 app.listen(3427);
