@@ -193,7 +193,13 @@ app.post('/start-conversation/', function (req, res) {
                     locusta.sInsertNow(res, u, uId, function () {});
                 });
 
-                reportSuccess(res, {conversation: conv});
+                locusta.get(convId, function (ree, conv) {
+                    if (err) {
+                        reportError(res, "Error.");
+                    } else {
+                        reportSuccess(res, {conversation: conv});
+                    }
+                });
             });
             
             _.each(users, function (u) {
