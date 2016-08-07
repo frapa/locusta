@@ -75,9 +75,10 @@ body {
 }
 
 div.message {
+    display: block;
     margin: 0.5em 1em 0.5em 1em;
     padding: 0.5em;
-    background: #d3dc82;
+    background: #daecbd;
     max-width: 60%;
     align-self: flex-start;
     border-radius: 0.25em;

@@ -146,6 +146,17 @@ var MessageView = Box.extend({
     }
 });
 
+var Label = Ui.extend({
+    text: '',
+
+    init: function (text, id)
+    {
+        this.text = text;
+        this.dom = this.newElement('label', '', text);
+        this.dom.for = id;
+    }
+});
+
 var Button = Ui.extend({
     text: '',
     className: 'button',
@@ -154,16 +165,43 @@ var Button = Ui.extend({
     {
         this.text = text;
 
-        klassen = [this.className];
+        klasses = [this.className];
         if (klass) {
-            klassen.push(klass);
+            klasses.push(klass);
         }
 
-        this.dom = this.newElement('button', klassen.join(' '), text, {
+        this.dom = this.newElement('button', klasses.join(' '), text, {
             click: callback
         });
 
         this.addId(id);
+    }
+});
+
+var Checkbox = Box.extend({
+    checked: false,
+    className: 'checkbox',
+
+    init: function (text, callback, id, klass)
+    {
+        klasses = [this.className];
+        if (klass) {
+            klasses.push(klass);
+        }
+
+        this.sup('ver', undefined, klasses.join(' '));
+
+        this.label = new Label(text, id);
+        this.add(this.label);
+
+        this.dom.insertBefore(this.newElement('div', 'knob'), null);
+        this.checkbox = this.newElement('input');
+        this.checkbox.type = 'checkbox';
+        this.dom.insertBefore(this.checkbox, null);
+    },
+
+    toggle: function () {
+        
     }
 });
 

@@ -15,6 +15,15 @@ var jsonUi = {
           type: 'Button',
           args: ['New conversation', function () { newConversation(); }, 0, 'toolbar-action']
         },
+        {
+          type: 'Box',
+          args: ['hor'],
+          grow: 1
+        },
+        {
+          type: 'Checkbox',
+          args: ['notification', function () { }, 'notification-enabled']
+        },
       ]
     },
     {
