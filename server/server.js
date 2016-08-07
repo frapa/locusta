@@ -102,7 +102,7 @@ function createConversation (res, users, type) {
         reportError(res, "Invalid conversation type");
     }
 
-    return conv;
+    return convId;
 }
 
 function createMessage (res, user, conv, type, data) {
@@ -185,11 +185,11 @@ app.post('/start-conversation/', function (req, res) {
 
             var userObjs = {};
             var whenUsersChecked = _.after(users.length, function () {
-                var conv = createConversation(res, users, req.body.type);
+                var convId = createConversation(res, users, req.body.type);
 
                 // update users
                 _.each(userObjs, function (u, uId) {
-                    u.conversations[conv._id] = { _id: conv._id };
+                    u.conversations[convId] = { _id: convId };
                     locusta.sInsertNow(res, u, uId, function () {});
                 });
 
