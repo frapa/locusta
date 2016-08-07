@@ -1,13 +1,26 @@
 var Class = chic.Class;
 
 var locusta = {
-    waitTime: 5000,
+    waitTimeFocus: 5000,
+    waitTimeBlur: 15000,
     username: null,
     password: null,
     conversations: {},
     activeConvId: null,
+    timer: null,
+    initialized: false,
+    notificationEnabled: true,
+    focus: false,
     getActiveConv: function () {
         return locusta.conversations[locusta.activeConvId];
+    },
+    sendNotification: function (title, body, icon) {
+        var options = {
+            body: body,
+            icon: icon
+        };
+
+        new Notification(title, options);
     }
 }
 
@@ -27,6 +40,7 @@ $(function () {
     }
 });
 
+// Start app after login
 function init () {
     $('#message-text').on('keyup', function sendOnEnter(event) {
         if (event.which == 13) {
@@ -38,10 +52,29 @@ function init () {
     });
 
     loadConversations(function () {
-        setInterval(loop, locusta.waitTime);
+        locusta.timer = window.setInterval(loop, locusta.waitTimeFocus);
+        locusta.initialized = true;
+        Notification.requestPermission();
     });
 }
 
+// Detect focus and blur of window
+window.onfocus = function () {
+    if (locusta.initialized) {
+        window.clearInterval(locusta.timer);
+        locusta.timer = window.setInterval(loop, locusta.waitTimeFocus);
+        locusta.focus = false;
+    }
+};
+window.onblur = function () {
+    if (locusta.initialized) {
+        window.clearInterval(locusta.timer);
+        locusta.timer = window.setInterval(loop, locusta.waitTimeBlur);
+        locusta.focus = true;
+    }   
+};
+
+// Poll for messages
 function loop () {
     var convs = locusta.conversations;
     for (convId in convs) {
@@ -51,6 +84,8 @@ function loop () {
         }
     }
 }
+
+// Event handlers -----------------------------------------
 
 function login () {
     locusta.username = $('#username')[0].value;

@@ -167,8 +167,29 @@ var Conversation = Class.extend({
                 console.error(res.msg);
             } else {
                 _this.lastActivity = new Date().getTime();
-                for (var i = 0, len = res.result.rows.length; i < len; i++) {
-                    _this.onMessage(res.result.rows[i].value, false);
+                
+                var messageNum = res.result.rows.length;
+                var othersMessageNum = 0;
+                var msgObj, otherMsgObj = null;
+                for (var i = 0, len = messageNum; i < len; i++) {
+                    msgObj = res.result.rows[i].value;
+
+                    if (msgObj.user !== locusta.username) {
+                        _this.onMessage(msgObj, false);
+                        otherMsgObj = msgObj;
+                        othersMessageNum += 1;
+                    }
+                }
+                
+                // notify only if not focused and notification enabled
+                if (locusta.notificationEnabled && locusta.focus) {
+                    if (othersMessageNum == 1) {
+                        if (otherMsgObj !== null) {
+                            locusta.sendNotification('Locusta: ' + otherMsgObj.user, otherMsgObj.data);
+                        }
+                    } else if (othersMessageNum > 1) {
+                        locusta.sendNotification('Locusta', othersMessageNum.toString()  + ' new messages');
+                    }
                 }
             }
         }); 
