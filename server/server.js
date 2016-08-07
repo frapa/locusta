@@ -326,9 +326,10 @@ app.post('/get-messages/', function (req, res) {
     });
 });
 
+var proxy = new httpProxy.RoutingProxy();
 app.all('/futon/', function (req, res) {
-    httpProxy.proxyRequest(req, res, {
-        host: 'http://127.0.0.1',
+    proxy.proxyRequest(req, res, {
+        host: '127.0.0.1',
         port: 8984
     });
 });
