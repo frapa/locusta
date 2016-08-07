@@ -3,6 +3,7 @@ var _ = require('underscore');
 
 // Express Js
 var bodyParser = require('body-parser');
+var http = require('http');
 var httpProxy = require('http-proxy');
 var express = require('express');
 var app = express();
