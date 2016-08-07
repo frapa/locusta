@@ -195,6 +195,7 @@ var Conversation = Class.extend({
         }
 
         this.ui.show();
+        $('#typing-bar')[0].style.display = 'flex';
 
         locusta.activeConvId = this._id;
     }

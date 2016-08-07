@@ -21,6 +21,7 @@ body {
 }
 
 #typing-bar {
+    display: none;
     background: white;
     margin: 1em;
     padding: 0.5em;
