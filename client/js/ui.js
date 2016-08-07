@@ -125,6 +125,8 @@ var Input = Ui.extend({
 
 
 var MessageView = Box.extend({
+    grow: 0,
+
     init: function (user, type, timestamp, message)
     {
         klasses = ['message'];
@@ -134,7 +136,8 @@ var MessageView = Box.extend({
 
         this.sup('ver', undefined, klasses.join(' '));
 
-        var messageContent = new Box('hor', undefined, 'message-content', message);
+        var pre = '<pre class="message">' + message + '</pre>'
+        var messageContent = new Box('hor', undefined, 'message-content', pre);
         var formattedDate = strftime('%H:%M - %e %b %Y', new Date(timestamp));
         var time = new Box('hor', undefined, 'message-time', formattedDate);
 

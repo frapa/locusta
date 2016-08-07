@@ -9,8 +9,9 @@ body {
 }
 
 #header {
-    padding: 0.75em;
+    padding: 0.5em;
     background: #5584b1;
+    box-shadow: 0 2px 2px #254e7b;
 }
 
 #sidebar {
@@ -20,7 +21,16 @@ body {
 }
 
 #typing-bar {
-    padding: 1em; 
+    background: white;
+    margin: 1em;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    box-shadow: 0 1px 2px #777777;
+    align-items: stretch;
+}
+
+#typing-bar .button {
+    padding: 0.25em 1em;
 }
 
 #login-hor,
@@ -48,6 +58,7 @@ body {
     background: transparent;
     color: black;
     text-align: left;
+    box-shadow: none;
 }
 
 .conversation-button:hover {
@@ -58,17 +69,20 @@ body {
 .message-list {
     flex-basis: 2em;
     overflow-y: auto;
+    align-content: flex-start;
 }
 
-.message {
+div.message {
     margin: 1em 1em 0 1em;
     padding: 0.5em;
     background: #d3dc82;
     max-width: 60%;
     align-self: flex-start;
+    border-radius: 0.25em;
+    box-shadow: 0 1px 2px #777777;
 }
 
-.own-message {
+div.own-message {
     align-self: flex-end;
     background: #cbe2ef;
 }
@@ -82,6 +96,15 @@ body {
     font-size: 60%;
     align-self: flex-end;
     color: #555;
+}
+
+.toolbar-action {
+    padding: 0.25em;
+    box-shadow: none;
+}
+
+.toolbar-action:hover {
+    animation-name: none;
 }
 
 /* http://colorpalettes.net/color-palette-2903/ */

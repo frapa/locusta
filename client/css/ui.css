@@ -4,20 +4,27 @@
 
 textarea {
     border: 0;
-    border-bottom: 0.2em solid #AAAAAA;
-    height: 1em;
-    padding: 0.5em;
-    flex-grow: 1;
-    font-size: 130%;
+    margin: 0 1em 0 0;
+    font-size: 140%;
+    height: 2.5em;
+    overflow: auto;
+    resize: none;
+    outline: none;
 }
 
 textarea:active, footer textarea:focus {
-    border-bottom: 0.2em solid #D96459;
+    border: 0;
+}
+
+pre.message {
+    font-family: 'Droid Sans', sans;
+    padding: 0;
+    margin: 0;
 }
 
 @keyframes button-background {
-    from { background: #5584b1; }
-    to { background: #254e7b; }
+    from { background: #5584b1; box-shadow: 0 0.15em #254e7b; }
+    to { background: #254e7b; box-shadow: none; }
 }
 
 .button {
@@ -26,12 +33,19 @@ textarea:active, footer textarea:focus {
     background: #5584b1;
     cursor: pointer;
     padding: 1em 0.6em;
+    border: 0;
+    border-radius: 0.25em;
+    box-shadow: 0 0.15em #254e7b;
+    font-weight: bold;
+    font-size: 80%;
+    outline: none;
 }
 
 .button:hover {
     background: #254e7b;
     animation-name: button-background;
     animation-duration: 0.5s;
+    box-shadow: none;
 }
 
 .context {
@@ -58,9 +72,6 @@ textarea:active, footer textarea:focus {
     box-shadow: 0 0.1em 0.1em #999999;
 }
 
-.typing-bar {
-}
-
 input[type='text'],
 input[type='password'] {
     font-size: 100%;
@@ -68,6 +79,8 @@ input[type='password'] {
     padding: 0.5em;
     margin: 0.5em 0;
     border: 0.1em solid #CCCCCC;
+    border-radius: 0.25em;
+    outline: none;
 }
 
 input[type='text']:focus,

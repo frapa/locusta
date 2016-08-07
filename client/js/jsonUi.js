@@ -9,11 +9,11 @@ var jsonUi = {
       children: [
         {
           type: 'Button',
-          args: ['New contact', function () { newContact(); }]
+          args: ['New contact', function () { newContact(); }, 0, 'toolbar-action']
         },
         {
           type: 'Button',
-          args: ['New conversation', function () { newConversation(); }]
+          args: ['New conversation', function () { newConversation(); }, 0, 'toolbar-action']
         },
       ]
     },

@@ -28,6 +28,15 @@ $(function () {
 });
 
 function init () {
+    $('#message-text').on('keyup', function sendOnEnter(event) {
+        if (event.which == 13) {
+            if (event.shiftKey === false) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+    });
+
     loadConversations(function () {
         setInterval(loop, locusta.waitTime);
     });

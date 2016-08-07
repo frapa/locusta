@@ -276,8 +276,7 @@ app.post('/get-messages/', function (req, res) {
                 var month = req.body.month;
                 var day = req.body.day;
 
-                var date = new Date(year, month-1, day);
-                var dateKey = [date.getUTCFullYear(), date.getUTCMonth()+1, date.getUTCDate()].join('-');
+                var dateKey = [year, month, day].join('-');
             }
 
             locusta.get(convId, function (err, conv) {
