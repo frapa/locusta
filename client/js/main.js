@@ -1,7 +1,7 @@
 var Class = chic.Class;
 
 var locusta = {
-    waitTimeFocus: 5000,
+    waitTimeFocus: 1000,
     waitTimeBlur: 15000,
     username: null,
     password: null,

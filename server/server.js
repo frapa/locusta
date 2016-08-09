@@ -21,7 +21,10 @@ locusta.sInsert = function (res, obj, name, callback) {
     locusta.insert(obj, name, function (err, body) {
         if (err) {
             console.log(err);
-            reportError(res, "Something went wrong.");
+            
+            if (callback === undefined) {
+                reportError(res, "Something went wrong.");
+            }
         } else {
             if (callback) {
                 callback(body);
@@ -279,7 +282,9 @@ app.post('/is-conversation-connected/', function (req, res) {
                     if (conv.users.indexOf(user.user) == -1) {
                         reportError(res, "No rights for this conversation.");
                     } else {
-                        isUserConnected(res, conv.users[0]); 
+                        var users = conv.users;
+                        users.splice(users.indexOf(user.user), 1);
+                        isUserConnected(res, users[0]); 
                     }
                 }
             });

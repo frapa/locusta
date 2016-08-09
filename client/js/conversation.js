@@ -209,11 +209,10 @@ var Conversation = Class.extend({
                 console.error(res.msg);
             } else {
                 if (res.connected) {
-                    _this.button.setStatus('connected', 'Connected')
+                    _this.button.setStatus('connected', 'Connected');
                 } else {
-                    var date = new Date(res.lastActivity);
                     _this.button.setStatus('disconnected',
-                        'Last connected on ' + strftime('%H:%M - %e %b %Y', date))
+                        'Last connected ' + vaguize(res.lastActivity));
                 }
             }   
         });
@@ -230,7 +229,7 @@ var Conversation = Class.extend({
     },
 
     generateButton: function () {
-        this.button = new ConversationButton(this.users[0], this.open.bind(this));
+        this.button = new ConversationButton(this.getOtherUser(), this.open.bind(this));
         this.button.setStatus('unknown', 'Checking...');
         return this.button;
     },
@@ -240,6 +239,13 @@ var Conversation = Class.extend({
             var sidebar = getUi('sidebar');
             sidebar.add(this.generateButton());
         }
+    },
+
+    // only works for conversation between two users
+    getOtherUser: function () {
+        var users = this.users;
+        users.splice(users.indexOf(locusta.username), 1);
+        return users[0];
     },
 
     open: function () {
