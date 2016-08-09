@@ -48,6 +48,27 @@ var Ui = Class.extend({
 
     show: function () {
         this.dom.style.display = 'auto';
+    },
+
+    addClass: function (klass, element) {
+        if (element == undefined) {
+            element = this.dom;
+        }
+
+        if (element.className.indexOf(klass) == -1) {
+            element.className += ' ' + klass;
+        }
+    },
+
+    removeClass: function (klass, element) {
+        if (element == undefined) {
+            element = this.dom;
+        }
+
+        if (element.className.indexOf(klass) != -1) {
+            var re = new RegExp(klass, 'g');
+            element.className = element.className.replace(re, '').trim();
+        }
     }
 });
 
@@ -88,6 +109,11 @@ var Box = Ui.extend({
         } else {
             this.dom.insertBefore(ui.dom, this.dom.childNodes[pos]);
         }
+    },       
+
+    setContent: function (content)
+    {
+        this.dom.innerHTML = content;
     }
 });
 
@@ -175,6 +201,54 @@ var Button = Ui.extend({
         });
 
         this.addId(id);
+    }
+});
+
+var ConversationButton = Box.extend({
+    grow: 0,
+    className: 'conversation-button',
+
+    init: function (title, callback)
+    {
+        this.sup('hor', undefined, this.className);
+        $(this.dom).on('click', callback);
+
+        var image = this.newElement('div', 'conversation-image');
+        this.dom.insertBefore(image, null);
+
+        var textContainer = new Box('ver', undefined, 'conversation-title-container');
+        this.title = new Box('hor', undefined, 'conversation-title', title);
+        this.statusText = new Box('hor', undefined, 'conversation-status');
+        textContainer.add(this.title);
+        textContainer.add(this.statusText);
+        this.add(textContainer);
+
+        this.statusIndicator = this.newElement('div', 'conversation-status-indicator');
+        var beauty = this.newElement('div', 'conversation-beauty');
+        this.dom.insertBefore(this.statusIndicator, null);
+        this.dom.insertBefore(beauty, null);
+    },
+
+    setTitle: function (title)
+    {
+        this.title.setContent(title);
+    },
+
+    // status can be 'connected', 'disconnected' or 'unknown'
+    setStatus: function (status, statusText)
+    {
+        if (status == 'connected') {
+            this.removeClass('user-disconnected', this.statusIndicator);
+            this.addClass('user-connected', this.statusIndicator);
+        } else if (status == 'disconnected') {
+            this.removeClass('user-connected', this.statusIndicator);
+            this.addClass('user-disconnected', this.statusIndicator);
+        } else {
+            this.removeClass('user-connected', this.statusIndicator);
+            this.removeClass('user-disconnected', this.statusIndicator);
+        }
+        
+        this.statusText.setContent(statusText);
     }
 });
 

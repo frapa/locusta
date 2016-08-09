@@ -3,6 +3,8 @@ var Conversation = Class.extend({
         this.users = [other];
         this.messages = {};
         this._id = null;
+
+        this.button = null;
     },
 
     start: function (success, error) {
@@ -16,9 +18,11 @@ var Conversation = Class.extend({
                 success(res);
             } else {
                 console.error(res.msg);
-                error(res);
+                if (error) {
+                    error(res);
+                }
             }
-        })
+        });
     },
 
     save: function () {
@@ -195,7 +199,24 @@ var Conversation = Class.extend({
         }); 
     },
 
-    getMessages: function (year, month, day) {
+    updateConnectedStatus: function () {
+        var _this = this;
+
+        post('is-conversation-connected', {
+            conversation: this._id
+        }, function (res) {
+            if (res.type == 'error') {
+                console.error(res.msg);
+            } else {
+                if (res.connected) {
+                    _this.button.setStatus('connected', 'Connected')
+                } else {
+                    var date = new Date(res.lastActivity);
+                    _this.button.setStatus('disconnected',
+                        'Last connected on ' + strftime('%H:%M - %e %b %Y', date))
+                }
+            }   
+        });
     },
 
     generateUi: function () {
@@ -209,13 +230,13 @@ var Conversation = Class.extend({
     },
 
     generateButton: function () {
-        this.buttonGenerated = true;
-        var button = new Button(this.users[0], this.open.bind(this), null, 'conversation-button');
-        return button;
+        this.button = new ConversationButton(this.users[0], this.open.bind(this));
+        this.button.setStatus('unknown', 'Checking...');
+        return this.button;
     },
 
     addToSidebar: function () {
-        if (!this.hasOwnProperty('buttonGenerated')) {
+        if (this.button === null) {
             var sidebar = getUi('sidebar');
             sidebar.add(this.generateButton());
         }
@@ -232,5 +253,11 @@ var Conversation = Class.extend({
         $('#typing-bar')[0].style.display = 'flex';
 
         locusta.activeConvId = this._id;
+
+        var button = $('.selected-conversation')[0];
+        if (button) {
+            new Ui().removeClass('selected-conversation', button);
+        }
+        this.button.addClass('selected-conversation');
     }
 });

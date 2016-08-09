@@ -52,6 +52,7 @@ function authenticate (req, res, callback) {
                 reportError(res, "Wrong password.");
             }
         } else {
+            console.error(err);
             reportError(res, "User '" + user + "' does not exists.");
         }
     });
@@ -85,7 +86,7 @@ function guid () {
     return uuid;
 }
 
-function createConversation (res, users, type) {
+function createConversation (res, users, type, callback) {
     var convId = 'conversation:' + guid();
     var conv = {
         type: type,
@@ -97,12 +98,10 @@ function createConversation (res, users, type) {
             users: users,
             messages: []
         });
-        locusta.sInsert(res, conv, convId, function () {});
+        locusta.sInsert(res, conv, convId, function () { callback(convId); });
     } else {
         reportError(res, "Invalid conversation type");
     }
-
-    return convId;
 }
 
 function createMessage (res, user, conv, type, data) {
@@ -132,6 +131,22 @@ function createMessage (res, user, conv, type, data) {
     return msg;
 }
 
+function isUserConnected (res, userName) {
+    var userId = 'user:' + userName;
+    locusta.get(userId, function (err, user) {
+        if (err) {
+            console.error(err);
+            reportError(res, "User '" + userName + "' does not exists");
+        } else {
+            if (user.connected) {
+                reportSuccess(res, { connected: true });
+            } else {
+                reportSuccess(res, { connected: false, lastActivity: user.lastActivity });
+            }
+        }
+    });
+}
+
 // Actions ------------------------------------------------
 
 app.use(express.static(__dirname + '/../client/'));
@@ -140,7 +155,9 @@ app.post('/connect/', function (req, res) {
     authenticate(req, res, function (user, userId) {
         if (!user.connected) {
             user.connected = 1;
-            locusta.sInsertNow(res, user, userId);
+            locusta.sInsertNow(res, user, userId, function () {
+                reportSuccess(res);
+            });
         } else {
             reportSuccess(res);
         }
@@ -185,20 +202,21 @@ app.post('/start-conversation/', function (req, res) {
 
             var userObjs = {};
             var whenUsersChecked = _.after(users.length, function () {
-                var convId = createConversation(res, users, req.body.type);
+                createConversation(res, users, req.body.type, function (convId) {
+                    // update users
+                    _.each(userObjs, function (u, uId) {
+                        u.conversations[convId] = { _id: convId };
+                        locusta.sInsertNow(res, u, uId, function () {});
+                    });
 
-                // update users
-                _.each(userObjs, function (u, uId) {
-                    u.conversations[convId] = { _id: convId };
-                    locusta.sInsertNow(res, u, uId, function () {});
-                });
-
-                locusta.get(convId, function (err, conv) {
-                    if (err) {
-                        reportError(res, "Error.");
-                    } else {
-                        reportSuccess(res, {conversation: conv});
-                    }
+                    locusta.get(convId, function (err, conv) {
+                        if (err) {
+                            console.error(err, convId);
+                            reportError(res, "Error.");
+                        } else {
+                            reportSuccess(res, {conversation: conv});
+                        }
+                    });
                 });
             });
             
@@ -206,6 +224,7 @@ app.post('/start-conversation/', function (req, res) {
                 var currentUserId = 'user:' + u;
                 locusta.get(currentUserId, function (err, body) {
                     if (err) {
+                        console.error(err);
                         reportError(res, "Nonexistant user specified.");
                     } else {
                         userObjs[currentUserId] = body;
@@ -231,16 +250,37 @@ app.post('/get-conversation/', function (req, res) {
             var convId = req.body.conversation;
             locusta.get(convId, function (err, body) {
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                     reportError(res, "Conversation does not exists.");
                 } else {
                     // check if user in conversation
                     if (body.users.indexOf(user.user) == -1) {
                         reportError(res, "No rights for this conversation.");
+                    } else {
+                        reportSuccess(res, { conversation: body });
+                        locusta.sInsertNow(res, body, convId, function () {});
                     }
+                }
+            });
+        }
+    });
+});
 
-                    reportSuccess(res, { conversation: body });
-                    locusta.sInsertNow(body, convId, function () {});
+app.post('/is-conversation-connected/', function (req, res) {
+    authenticate(req, res, function (user, userId) {
+        if (user.connected) {
+            var convId = req.body.conversation;
+            locusta.get(convId, function (err, conv) {
+                if (err) {
+                    console.error(err);
+                    reportError(res, "Conversation does not exists.");
+                } else {
+                    // check if user in conversation
+                    if (conv.users.indexOf(user.user) == -1) {
+                        reportError(res, "No rights for this conversation.");
+                    } else {
+                        isUserConnected(res, conv.users[0]); 
+                    }
                 }
             });
         }
@@ -262,9 +302,9 @@ app.post('/send-message/', function (req, res) {
                     // check if user in conversation
                     if (conv.users.indexOf(user.user) == -1) {
                         reportError(res, "No rights for this conversation.");
-                    }
-
-                    createMessage(res, user.user, conv, type, data);
+                    } else {
+                        createMessage(res, user.user, conv, type, data);
+                    }   
                 }
             });
         }
@@ -293,36 +333,36 @@ app.post('/get-messages/', function (req, res) {
                     // check if user in conversation
                     if (conv.users.indexOf(user.user) == -1) {
                         reportError(res, "No rights for this conversation.");
-                    }
-                    
-                    if (timestamp == 0) {
-                        // get all messages in the specified day
-                        locusta.view('messages', 'by_conv_and_date', {
-                            startkey: [convId, dateKey],
-                            endkey: [convId, dateKey, {}]
-                        }, function (err, body) {
-                            if (err) {
-                                console.log(err);
-                                reportError(res, "Cannot retrieve messages.");
-                            } else {
-                                reportSuccess(res, { result: body } );
-                                locusta.sInsertNow(conv, convId, function () {});
-                            }
-                        });
                     } else {
-                        // get only messages newer than timestamp
-                        locusta.view('messages', 'by_conv_and_timestamp', {
-                            startkey: [convId, parseInt(timestamp)],
-                            endkey: [convId, new Date().getTime()]
-                        }, function (err, body) {
-                            if (err) {
-                                console.log(err);
-                                reportError(res, "Cannot retrieve messages.");
-                            } else {
-                                reportSuccess(res, { result: body } );
-                                locusta.sInsertNow(conv, convId, function () {});
-                            }
-                        });
+                        if (timestamp == 0) {
+                            // get all messages in the specified day
+                            locusta.view('messages', 'by_conv_and_date', {
+                                startkey: [convId, dateKey],
+                                endkey: [convId, dateKey, {}]
+                            }, function (err, body) {
+                                if (err) {
+                                    console.log(err);
+                                    reportError(res, "Cannot retrieve messages.");
+                                } else {
+                                    reportSuccess(res, { result: body } );
+                                    locusta.sInsertNow(res, conv, convId, function () {});
+                                }
+                            });
+                        } else {
+                            // get only messages newer than timestamp
+                            locusta.view('messages', 'by_conv_and_timestamp', {
+                                startkey: [convId, parseInt(timestamp)],
+                                endkey: [convId, new Date().getTime()]
+                            }, function (err, body) {
+                                if (err) {
+                                    console.log(err);
+                                    reportError(res, "Cannot retrieve messages.");
+                                } else {
+                                    reportSuccess(res, { result: body } );
+                                    locusta.sInsertNow(res, conv, convId, function () {});
+                                }
+                            });
+                        }
                     }
                 }
             });

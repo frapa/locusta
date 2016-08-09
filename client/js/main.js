@@ -27,13 +27,19 @@ var locusta = {
 // This starts it all!
 $(function () {
     if (localstore.get('connected')) {
-        var Ui = buildUi(jsonUi);
-        $('body')[0].appendChild(Ui.dom);
-
         locusta.username = localstore.get('username');
         locusta.password = localstore.get('password');
 
-        init();
+        post('connect', {}, function (r) {
+            if (r.type === 'error') {
+                console.error(r.msg);
+            } else {
+                var Ui = buildUi(jsonUi);
+                $('body')[0].appendChild(Ui.dom);
+
+                init();
+            }
+        });
     } else {
         var loginUi = buildUi(jsonLogin);
         $('body')[0].appendChild(loginUi.dom);
@@ -42,6 +48,11 @@ $(function () {
 
 // Start app after login
 function init () {
+    // Disconnect on page unload
+    window.addEventListener('beforeunload', function () {
+        post('disconnect', {}, function () { console.log('DISCONNECTED'); });
+    });
+
     // Setup send on enter
     $('#message-text').on('keyup', function sendOnEnter(event) {
         if (event.which == 13) {
@@ -85,6 +96,7 @@ function loop () {
         if (convs.hasOwnProperty(convId)) {
             var conv = convs[convId];
             conv.loadNewMessages();
+            conv.updateConnectedStatus();
         }
     }
 }
@@ -160,7 +172,6 @@ function newConversation () {
         } else {
             conv = new Conversation(user);
             conv.start(showConversation.bind(null, conv));
-            //conv.save();
         }
 
         dismiss('select-contact-dialog');
